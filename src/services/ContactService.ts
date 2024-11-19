@@ -1,6 +1,6 @@
 import { Contact } from "../models/ContactModel";
 import { ContactRepository } from "../repositories/ContactRepository"
-import { ApiResponseDTO, findAllApiResponseDTO } from "../models/ApiResponseDTO";
+import { ApiResponseDTO, deleteApiResponseDTO, findAllApiResponseDTO } from "../models/ApiResponseDTO";
 import { ApiRequestDTO } from "../models/ApiRequestDTO"
 import { ValidateData } from "./helpers/ValidateData";
 
@@ -44,9 +44,16 @@ export class ContactService {
         }
     }
 
-    deleteContact(id: string) {
+    deleteContact(id: string): deleteApiResponseDTO{
         const validateContactExistence = this.validator.validateIfContactExists(id);
         if (validateContactExistence) { return validateContactExistence }
-        return this.repository.deleteContact(id);
+        const deleted: boolean = this.repository.deleteContact(id)
+        if (deleted) {
+            console.log("deletou");
+            return {
+                status: 200
+            }
+        }
+        return {status: 501}
     }
 }
