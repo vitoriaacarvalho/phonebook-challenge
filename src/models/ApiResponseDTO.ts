@@ -10,3 +10,7 @@ export interface findAllApiResponseDTO {
     status: number;
     contacts: Contact[];
 }
+
+export interface deleteApiResponseDTO {
+    status: number;
+}
