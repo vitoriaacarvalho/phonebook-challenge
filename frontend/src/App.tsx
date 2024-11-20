@@ -1,0 +1,86 @@
+import React, { useState, useEffect } from "react";
+import { getContacts, addContact, deleteContact, updateContact } from "./services/contact/contact.service";
+import { Contact } from "./services/contact/contact.dto";
+import AddContactModal from "./components/addContactModal";
+import PhoneBookCard from "./components/phoneBookCard";
+import ContactCard from "./components/contactCard";
+import SearchContactsInput from "./components/searchContactsInput";
+import FilterContacts from "./components/filterContacts";
+import DeleteContactModal from "./components/deleteContactModal";
+
+export default function App() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
+  });
+
+  async function listContacts() {
+    const fetchedContacts = await getContacts();
+    setContacts(fetchedContacts);
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+    if (selectedContact) {
+      await updateContact(selectedContact.id, formData as Contact);
+    } else {
+      // The id field is not required to be sent when adding a new contact
+      await addContact(formData as Contact);
+    }
+
+    setIsModalOpen(false);
+    resetForm();
+    listContacts();
+  }
+
+  function handleEdit(contact: Contact) {
+    setSelectedContact(contact);
+    setFormData({
+      firstName: contact.firstName,
+      lastName: contact.lastName,
+      phoneNumber: contact.phoneNumber,
+    });
+    setIsModalOpen(true);
+  }
+
+  function handleDelete(contact: Contact) {
+    setSelectedContact(contact);
+    setIsDeleteModalOpen(true);
+  }
+
+  function resetForm() {
+    setFormData({ firstName: "", lastName: "", phoneNumber: "" });
+    setSelectedContact(null);
+  }
+
+  useEffect(() => {
+    listContacts();
+  }, []);
+
+  const filteredContacts = contacts.filter(
+    (contact) =>
+      contact.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      contact.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      contact.phoneNumber.includes(searchTerm)
+  );
+
+  return (
+    <div className="h-screen flex items-center justify-center bg-gray-50">
+      <div className="w-full max-w-2xl mx-auto p-6 space-y-6 bg-white shadow-lg rounded-lg">
+        <PhoneBookCard />
+        <ContactCard resetForm={resetForm} setIsModalOpen={setIsModalOpen} />
+        <SearchContactsInput searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+        <FilterContacts filteredContacts={filteredContacts} handleEdit={handleEdit} handleDelete={handleDelete}/>
+        {isModalOpen && (<AddContactModal selectedContact={selectedContact} handleSubmit={handleSubmit} formData={formData} setFormData={setFormData} setIsModalOpen={setIsModalOpen}/>)}
+        {isDeleteModalOpen && (<DeleteContactModal selectedContact={selectedContact} setIsDeleteModalOpen={setIsDeleteModalOpen} deleteContact={deleteContact} listContacts={listContacts} />)}
+      </div>
+    </div>
+  );
+}
