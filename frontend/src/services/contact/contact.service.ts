@@ -13,11 +13,12 @@ export const getContacts = async (): Promise<Contact[]> => {
   const response = await api.get("/contacts");
   return response.data.body;
 };
-
 export const addContact = async (contact: Contact) => {
   const response = await api.post("/contacts", contact);
+  console.log("Status:", response.status);
   return response.data;
 };
+
 
 export const deleteContact = async (id: string) => {
   const response = await api.delete(`/contacts/${id}`);

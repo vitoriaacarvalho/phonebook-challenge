@@ -7,6 +7,7 @@ import ContactCard from "./components/contactCard";
 import SearchContactsInput from "./components/searchContactsInput";
 import FilterContacts from "./components/filterContacts";
 import DeleteContactModal from "./components/deleteContactModal";
+import { toast, ToastContainer } from "react-toastify";
 
 export default function App() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -23,21 +24,6 @@ export default function App() {
   async function listContacts() {
     const fetchedContacts = await getContacts();
     setContacts(fetchedContacts);
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-
-    if (selectedContact) {
-      await updateContact(selectedContact.id, formData as Contact);
-    } else {
-      // The id field is not required to be sent when adding a new contact
-      await addContact(formData as Contact);
-    }
-
-    setIsModalOpen(false);
-    resetForm();
-    listContacts();
   }
 
   function handleEdit(contact: Contact) {
@@ -64,6 +50,31 @@ export default function App() {
     listContacts();
   }, []);
 
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+    try {
+      if (selectedContact) {
+        await updateContact(selectedContact.id, formData as Contact);
+        toast.success('✨ Contact updated successfully');
+      } else {
+        await addContact(formData as Contact);
+        toast.success('✨ Contact added successfully');
+      }
+      setIsModalOpen(false);
+      resetForm();
+      listContacts();
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message); 
+      } else {
+        toast.error('An unexpected error occurred'); 
+      }
+      console.error('Unexpected error:', error);
+    }
+  }
+
+
   const filteredContacts = contacts.filter(
     (contact) =>
       contact.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -72,13 +83,28 @@ export default function App() {
   );
 
   return (
+
     <div className="h-screen flex items-center justify-center bg-gray-50">
+
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <div className="w-full max-w-2xl mx-auto p-6 space-y-6 bg-white shadow-lg rounded-lg">
+
         <PhoneBookCard />
         <ContactCard resetForm={resetForm} setIsModalOpen={setIsModalOpen} />
         <SearchContactsInput searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-        <FilterContacts filteredContacts={filteredContacts} handleEdit={handleEdit} handleDelete={handleDelete}/>
-        {isModalOpen && (<AddContactModal selectedContact={selectedContact} handleSubmit={handleSubmit} formData={formData} setFormData={setFormData} setIsModalOpen={setIsModalOpen}/>)}
+        <FilterContacts filteredContacts={filteredContacts} handleEdit={handleEdit} handleDelete={handleDelete} />
+        {isModalOpen && (<AddContactModal selectedContact={selectedContact} handleSubmit={handleSubmit} formData={formData} setFormData={setFormData} setIsModalOpen={setIsModalOpen} />)}
         {isDeleteModalOpen && (<DeleteContactModal selectedContact={selectedContact} setIsDeleteModalOpen={setIsDeleteModalOpen} deleteContact={deleteContact} listContacts={listContacts} />)}
       </div>
     </div>
