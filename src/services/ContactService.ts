@@ -21,7 +21,7 @@ export class ContactService {
             contact: newContact,
         }
     }
-
+    
     findAllContacts(): findAllApiResponseDTO {
         const contacts: Contact[] = this.repository.findAllContacts();
         return {
@@ -49,11 +49,10 @@ export class ContactService {
         if (validateContactExistence) { return validateContactExistence }
         const deleted: boolean = this.repository.deleteContact(id)
         if (deleted) {
-            console.log("deletou");
             return {
                 status: 200
             }
         }
-        return {status: 501}
+        return {status: 500}
     }
 }

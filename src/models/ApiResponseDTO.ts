@@ -13,4 +13,5 @@ export interface findAllApiResponseDTO {
 
 export interface deleteApiResponseDTO {
     status: number;
+    message?: string;
 }

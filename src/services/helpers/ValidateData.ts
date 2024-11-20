@@ -21,13 +21,13 @@ export class ValidateData {
     validatePhoneAndName(data: ApiRequestDTO): any {
         if (!this.#validateFirstName(data.firstName)) {
             return {
-                status: 404,
+                status: 400,
                 message: 'The name provided is too small. Please review it and try again.'
             };
         }
         if (!this.#validatePhoneNumber(data.phoneNumber)) {
             return {
-                status: 404,
+                status: 400,
                 message: 'The phone number provided is not in the right format. Please review it and try again.'
             };
         }

@@ -37,7 +37,7 @@ export class ContactController {
     deleteContact = (req: Request, res: Response) => {
         try{
             const deleteContactResponse: deleteApiResponseDTO = this.service.deleteContact(req.params.id);
-            res.status(deleteContactResponse.status).json({});    
+            res.status(deleteContactResponse.status).json(deleteContactResponse.message? {message: deleteContactResponse.message} : {});    
         }catch (error) {
             res.status(500).json({});
         }
