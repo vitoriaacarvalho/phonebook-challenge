@@ -40,9 +40,7 @@ export class ValidateData {
     }
 
     #validateFirstName(firstName: string): boolean {
-        if (firstName && firstName.length < 1) {
-            return false;
-        }
-        return true;
+        const firstNameRegex = /^[^\s]{2,}$/; 
+        return firstNameRegex.test(firstName.trim()); 
     }
 }
