@@ -13,12 +13,11 @@ export const getContacts = async (): Promise<Contact[]> => {
   const response = await api.get("/contacts");
   return response.data.body;
 };
+
 export const addContact = async (contact: Contact) => {
   const response = await api.post("/contacts", contact);
-  console.log("Status:", response.status);
-  return response.data;
+  return response?.data;
 };
-
 
 export const deleteContact = async (id: string) => {
   const response = await api.delete(`/contacts/${id}`);
@@ -29,5 +28,3 @@ export const updateContact = async (id: string, contact: Contact) => {
   const response = await api.put(`/contacts/${id}`, contact);
   return response.data;
 };
-
-api.interceptors.response.use((response) => response, onRejected);
