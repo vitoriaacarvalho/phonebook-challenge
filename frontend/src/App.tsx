@@ -52,7 +52,6 @@ export default function App() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-
     try {
       if (selectedContact) {
         await updateContact(selectedContact.id, formData as Contact);
@@ -64,16 +63,14 @@ export default function App() {
       setIsModalOpen(false);
       resetForm();
       listContacts();
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message); 
+    } catch (error: any) {
+      if (error.response.data) {
+        toast.error(error.response.data.message);
       } else {
-        toast.error('An unexpected error occurred'); 
+        toast.error('An unexpected error occurred');
       }
-      console.error('Unexpected error:', error);
     }
   }
-
 
   const filteredContacts = contacts.filter(
     (contact) =>
@@ -98,14 +95,14 @@ export default function App() {
         pauseOnHover
         theme="light"
       />
-      <div className="w-full max-w-2xl mx-auto p-6 space-y-6 bg-white shadow-lg rounded-lg">
 
+      <div className="w-full max-w-2xl mx-auto p-6 space-y-6 bg-white shadow-lg rounded-lg">
         <PhoneBookCard />
         <ContactCard resetForm={resetForm} setIsModalOpen={setIsModalOpen} />
         <SearchContactsInput searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         <FilterContacts filteredContacts={filteredContacts} handleEdit={handleEdit} handleDelete={handleDelete} />
-        {isModalOpen && (<AddContactModal selectedContact={selectedContact} handleSubmit={handleSubmit} formData={formData} setFormData={setFormData} setIsModalOpen={setIsModalOpen} />)}
-        {isDeleteModalOpen && (<DeleteContactModal selectedContact={selectedContact} setIsDeleteModalOpen={setIsDeleteModalOpen} deleteContact={deleteContact} listContacts={listContacts} />)}
+        { isModalOpen && (<AddContactModal selectedContact={selectedContact} handleSubmit={handleSubmit} formData={formData} setFormData={setFormData} setIsModalOpen={setIsModalOpen} />)}
+          {isDeleteModalOpen && (<DeleteContactModal selectedContact={selectedContact} setIsDeleteModalOpen={setIsDeleteModalOpen} deleteContact={deleteContact} listContacts={listContacts} />)}
       </div>
     </div>
   );
